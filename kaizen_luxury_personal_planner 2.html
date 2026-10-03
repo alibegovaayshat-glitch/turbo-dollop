@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kaizen Luxury Personal Planner</title>
+  <!-- Load Google Fonts for Bodoni Moda & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Bodoni Moda"', 'Didot', 'Garamond', 'serif'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+          colors: {
+            luxuryBlack: '#0a0a0a',
+            luxuryGray: '#1a1a1a',
+            luxuryLightGray: '#f8f8f8',
+            luxuryBorder: '#000000',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      background-color: #ffffff;
+      color: #000000;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      touch-action: manipulation;
+    }
+
+    /* Custom Checkbox Style */
+    .lux-checkbox {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border: 1px solid #000;
+      border-radius: 0px;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      background: transparent;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+    .lux-checkbox:checked {
+      background-color: #000;
+    }
+    .lux-checkbox:checked::after {
+      content: '✓';
+      position: absolute;
+      color: #fff;
+      font-size: 9px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Compact scrollbars */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Input borders & Focus outline */
+    .lux-input {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+      background: transparent;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .lux-input:focus {
+      border-bottom-color: #000000;
+    }
+
+    /* Tab active styles */
+    .top-tab-btn {
+      padding: 6px 10px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid #000;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .top-tab-btn.active {
+      background-color: #000;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Sphere Tag Badge */
+    .sphere-tag {
+      font-size: 8px;
+      padding: 1px 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-black bg-white select-none pb-8">
+
+  <!-- PIN LOCK MODAL -->
+  <div id="pinModal" class="fixed inset-0 bg-black text-white z-[999] flex flex-col items-center justify-center p-4 transition-opacity duration-300 hidden">
+    <div class="font-serif text-lg tracking-widest uppercase mb-1">Chanel Kaizen</div>
+    <div class="text-[10px] uppercase tracking-widest text-neutral-400 mb-6">Безопасный доступ</div>
+    <div id="pinDisplay" class="font-serif text-2xl tracking-[0.8em] mb-6 h-8 flex items-center justify-center">••••</div>
+    <div class="grid grid-cols-3 gap-4 max-w-[220px]">
+      <button class="w-11 h-11 border border-white/30 rounded-full text-base font-serif flex items-center justify-center active:bg-white active:text-black transition" onclick="enterPin('1')">1</button>
+      <button class="w-11 h-11 border border-white/30 rounded-full text-base font-serif flex items-center justify-center active:bg-white active:text-black transition" onclick="enterPin('2')">2</button>
+      <button class="w-11 h-11 border border-white/30 rounded-full text-base font-serif flex items-center justify-center active:bg-white active:text-black transition" onclick="enterPin('3')">3</button>
+      <button class="w-11 h-11 border border-white/30 rounded-full text-base font-serif flex items-center justify-center active:bg-white active:text-black transition" onclick="enterPin('4')">4</button>
+      <button class="w-11 h-11 border border-white/30 rounded-full text-base font-serif flex items-center justify-center active:bg-white active:text-black transition" onclick="enterPin('5')">5</button>
+      <button class="w-11 h-11 border border-white/30 rounded-full text-base font-serif flex items-center justify-center active:bg-white active:text-black transition" onclick="enterPin('6')">6</button>
+      <button class="w-11 h-11 border border-white/30 rounded-full text-base font-serif flex items-center justify-center active:bg-white active:text-black transition" onclick="enterPin('7')">7</button>
+      <button class="w-11 h-11 border border-white/30 rounded-full text-base font-serif flex items-center justify-center active:bg-white active:text-black transition" onclick="enterPin('8')">8</button>
+      <button class="w-11 h-11 border border-white/30 rounded-full text-base font-serif flex items-center justify-center active:bg-white active:text-black transition" onclick="enterPin('9')">9</button>
+      <button class="w-11 h-11 border border-white/30 rounded-full text-[9px] tracking-widest font-sans flex items-center justify-center active:bg-white active:text-black transition" onclick="enterPin('C')">СБРОС</button>
+      <button class="w-11 h-11 border border-white/30 rounded-full text-base font-serif flex items-center justify-center active:bg-white active:text-black transition" onclick="enterPin('0')">0</button>
+      <button class="w-11 h-11 border border-white bg-white text-black rounded-full text-base font-serif flex items-center justify-center active:bg-neutral-300 transition" onclick="enterPin('OK')">✓</button>
+    </div>
+  </div>
+
+  <!-- CUSTOM NOTICE MODAL (Replaces alert) -->
+  <div id="noticeModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-[990] flex items-center justify-center p-4 hidden">
+    <div class="bg-white border border-black p-4 max-w-xs w-full text-center space-y-3">
+      <div id="noticeModalTitle" class="font-serif text-xs uppercase tracking-widest font-bold">Уведомление</div>
+      <div id="noticeModalBody" class="text-xs leading-relaxed font-serif italic text-neutral-700"></div>
+      <button onclick="closeNotice()" class="w-full bg-black text-white text-[10px] uppercase tracking-widest py-1.5">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- CUSTOM CONFIRM MODAL (Replaces confirm) -->
+  <div id="confirmModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-[990] flex items-center justify-center p-4 hidden">
+    <div class="bg-white border border-black p-4 max-w-xs w-full text-center space-y-3">
+      <div id="confirmModalTitle" class="font-serif text-xs uppercase tracking-widest font-bold">Подтверждение</div>
+      <div id="confirmModalBody" class="text-xs leading-relaxed font-serif italic text-neutral-700">Вы уверены?</div>
+      <div class="flex gap-2">
+        <button id="confirmBtnCancel" class="w-1/2 border border-black text-[10px] uppercase tracking-widest py-1.5 hover:bg-neutral-100">Отмена</button>
+        <button id="confirmBtnOk" class="w-1/2 bg-black text-white text-[10px] uppercase tracking-widest py-1.5">Да</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER & MISSION BANNER -->
+  <header class="bg-black text-white text-center py-2 px-4 border-b border-black sticky top-0 z-40">
+    <div id="missionBannerText" class="font-serif italic text-[11px] tracking-wide max-w-lg mx-auto">
+      "Моя цель — Рай. Мой путь — довольство Аллаха. Моя инструкция — Коран."
+    </div>
+  </header>
+
+  <!-- TOP NAVIGATION TABS (СВЕРХУ) -->
+  <nav class="sticky top-[33px] bg-white z-30 border-b border-black py-2 px-2 shadow-xs">
+    <div class="max-w-2xl mx-auto flex items-center justify-between gap-1">
+      <div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+        <button id="tab-day" class="top-tab-btn active" onclick="switchTab('day')">1. День</button>
+        <button id="tab-week" class="top-tab-btn" onclick="switchTab('week')">2. Неделя</button>
+        <button id="tab-month" class="top-tab-btn" onclick="switchTab('month')">3. Месяц</button>
+        <button id="tab-year" class="top-tab-btn" onclick="switchTab('year')">4. Год</button>
+        <button id="tab-fiveYears" class="top-tab-btn" onclick="switchTab('fiveYears')">5. 5 Лет</button>
+      </div>
+
+      <button onclick="toggleModal('settingsModal')" class="p-1 hover:opacity-60 transition flex-shrink-0" title="Настройки">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.3" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.3" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN APP WRAPPER -->
+  <main class="max-w-2xl mx-auto w-full px-2 pt-3 flex-grow space-y-3">
+
+    <!-- AUTOMATIC WHEEL OF BALANCE MODULE (ON ALL TABS) -->
+    <details open class="border border-black bg-white group">
+      <summary class="p-2 font-serif text-[11px] uppercase tracking-wider cursor-pointer list-none flex justify-between items-center bg-neutral-50 select-none">
+        <div class="flex items-center gap-2">
+          <span class="font-bold">Колесо Баланса</span>
+          <span id="overallBalanceBadge" class="text-[9px] bg-black text-white px-1.5 py-0.5 rounded-none font-sans font-normal">0%</span>
+        </div>
+        <span class="text-[9px] group-open:rotate-180 transition-transform">▼</span>
+      </summary>
+
+      <div class="p-2 border-t border-black bg-white">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[9px]" id="spheresContainer">
+          <!-- Dynamically populated by JS: Духовность, Семья, Родственники, Работа, Карьера, Здоровье, Развитие -->
+        </div>
+      </div>
+    </details>
+
+    <!-- TAB 1: DAY (ДЕНЬ) -->
+    <div id="view-day" class="tab-view space-y-3">
+
+      <!-- UNIVERSAL TIMER & FOCUS -->
+      <div class="border border-black p-3 bg-white grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+        <!-- FOCUS TASK -->
+        <div class="space-y-1">
+          <span class="text-[9px] uppercase tracking-widest text-neutral-500 font-semibold block">Главный фокус дня</span>
+          <input type="text" id="dailyFocus" class="w-full font-serif italic text-xs lux-input py-1" placeholder="Введите главный фокус дня...">
+        </div>
+
+        <!-- UNIVERSAL EDITABLE TIMER -->
+        <div class="border border-neutral-200 p-2 flex flex-col items-center justify-center bg-neutral-50">
+          <div class="text-[8px] uppercase tracking-widest text-neutral-400 mb-1">Универсальный Кайдзен-Таймер</div>
+          <div class="flex items-center gap-1 font-serif text-xl tracking-wider my-0.5">
+            <input type="number" id="timerMin" min="0" max="999" value="25" onchange="updateTimerFromInput()" class="w-10 text-center bg-white border border-black font-serif text-sm py-0.5 outline-none">
+            <span>:</span>
+            <input type="number" id="timerSec" min="0" max="59" value="00" onchange="updateTimerFromInput()" class="w-10 text-center bg-white border border-black font-serif text-sm py-0.5 outline-none">
+          </div>
+          
+          <div class="flex gap-1 mt-1">
+            <button id="timerToggleBtn" onclick="toggleTimer()" class="border border-black bg-black text-white px-2.5 py-0.5 text-[9px] uppercase tracking-wider hover:bg-neutral-800">Старт</button>
+            <button onclick="resetTimer()" class="border border-black px-2 py-0.5 text-[9px] uppercase tracking-wider hover:bg-neutral-100">Сброс</button>
+            <button onclick="setTimerPreset(5)" class="border border-neutral-300 px-1 py-0.5 text-[8px]">5m</button>
+            <button onclick="setTimerPreset(25)" class="border border-neutral-300 px-1 py-0.5 text-[8px]">25m</button>
+            <button onclick="setTimerPreset(50)" class="border border-neutral-300 px-1 py-0.5 text-[8px]">50m</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRAYERS & QURAN COUNTER -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <!-- PRAYERS -->
+        <div class="sm:col-span-2 border border-black p-2 bg-white">
+          <div class="text-[9px] uppercase tracking-widest mb-1.5 text-neutral-500 font-semibold">Обязательные молитвы</div>
+          <div class="grid grid-cols-5 gap-1 text-center">
+            <label class="border border-neutral-300 py-1 px-0.5 flex flex-col items-center cursor-pointer hover:border-black">
+              <span class="text-[8px] uppercase mb-0.5">Фаджр</span>
+              <input type="checkbox" id="pr-fajr" class="lux-checkbox" onchange="saveState()">
+            </label>
+            <label class="border border-neutral-300 py-1 px-0.5 flex flex-col items-center cursor-pointer hover:border-black">
+              <span class="text-[8px] uppercase mb-0.5">Зухр</span>
+              <input type="checkbox" id="pr-dhuhr" class="lux-checkbox" onchange="saveState()">
+            </label>
+            <label class="border border-neutral-300 py-1 px-0.5 flex flex-col items-center cursor-pointer hover:border-black">
+              <span class="text-[8px] uppercase mb-0.5">Аср</span>
+              <input type="checkbox" id="pr-asr" class="lux-checkbox" onchange="saveState()">
+            </label>
+            <label class="border border-neutral-300 py-1 px-0.5 flex flex-col items-center cursor-pointer hover:border-black">
+              <span class="text-[8px] uppercase mb-0.5">Магриб</span>
+              <input type="checkbox" id="pr-maghrib" class="lux-checkbox" onchange="saveState()">
+            </label>
+            <label class="border border-neutral-300 py-1 px-0.5 flex flex-col items-center cursor-pointer hover:border-black">
+              <span class="text-[8px] uppercase mb-0.5">Иша</span>
+              <input type="checkbox" id="pr-isha" class="lux-checkbox" onchange="saveState()">
+            </label>
+          </div>
+        </div>
+
+        <!-- QURAN COUNTER -->
+        <div class="border border-black p-2 bg-white flex flex-col justify-between">
+          <span class="text-[9px] uppercase tracking-widest text-neutral-500 font-semibold">Страниц Корана</span>
+          <div class="flex items-center justify-between mt-1">
+            <button onclick="changeQuran(-1)" class="w-6 h-6 border border-black text-xs font-bold hover:bg-black hover:text-white transition">-</button>
+            <span id="quranCount" class="font-serif text-lg">0</span>
+            <button onclick="changeQuran(1)" class="w-6 h-6 border border-black text-xs font-bold hover:bg-black hover:text-white transition">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- WATER TRACKER (8 CUPS) -->
+      <div class="border border-black p-2.5 bg-white">
+        <div class="flex justify-between items-center mb-1.5">
+          <span class="text-[9px] uppercase tracking-widest text-neutral-500 font-semibold">Трекер воды (8 стаканов)</span>
+          <span id="waterCountText" class="text-[9px] font-serif italic text-neutral-600">0 / 8 стаканов</span>
+        </div>
+        <div class="flex justify-between items-center gap-1" id="waterCupsContainer">
+          <!-- 8 Water Circles generated via JS -->
+        </div>
+      </div>
+
+      <!-- TASKS & OPEN LOOPS GRID -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- TODAY TASKS -->
+        <div class="border border-black p-3 bg-white flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center border-b border-black/20 pb-1 mb-2">
+              <span class="font-serif text-xs uppercase font-bold tracking-wider">Задачи на день</span>
+              <span class="text-[8px] text-neutral-400">Сфера жизни</span>
+            </div>
+            <ul id="tasksDayList" class="space-y-1.5 mb-2"></ul>
+          </div>
+          <div class="flex gap-1 pt-1 border-t border-neutral-200">
+            <input type="text" id="inputTasksDay" onkeydown="handleEnterAdd(event, 'tasksDayList')" class="w-full text-xs lux-input py-0.5" placeholder="+ Новая задача...">
+            <select id="selectTasksDaySphere" class="text-[9px] border border-black bg-white px-1 py-0.5 outline-none">
+              <option value="spirituality">Духовность</option>
+              <option value="family">Семья</option>
+              <option value="relatives">Родственники</option>
+              <option value="work" selected>Работа</option>
+              <option value="career">Карьера</option>
+              <option value="health">Здоровье</option>
+              <option value="development">Развитие</option>
+            </select>
+            <button onclick="addItemFromInput('inputTasksDay', 'tasksDayList', 'selectTasksDaySphere')" class="border border-black bg-black text-white text-[10px] px-2 py-0.5">+</button>
+          </div>
+        </div>
+
+        <!-- OPEN LOOPS (НЕЗАВЕРШЕННЫЕ ГЕШТАЛЬТЫ) -->
+        <div class="border border-black p-3 bg-white flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center border-b border-black/20 pb-1 mb-2">
+              <span class="font-serif text-xs uppercase font-bold tracking-wider">Незавершенные гештальты</span>
+              <span class="text-[8px] text-neutral-400">Долги/Обещания</span>
+            </div>
+            <ul id="openLoopsList" class="space-y-1.5 mb-2"></ul>
+          </div>
+          <div class="flex gap-1 pt-1 border-t border-neutral-200">
+            <input type="text" id="inputOpenLoops" onkeydown="handleEnterAdd(event, 'openLoopsList')" class="w-full text-xs lux-input py-0.5" placeholder="+ Повисший долг/обещание...">
+            <select id="selectOpenLoopsSphere" class="text-[9px] border border-black bg-white px-1 py-0.5 outline-none">
+              <option value="work">Работа</option>
+              <option value="family">Семья</option>
+              <option value="relatives">Родственники</option>
+              <option value="development">Развитие</option>
+              <option value="spirituality">Духовность</option>
+              <option value="career">Карьера</option>
+              <option value="health">Здоровье</option>
+            </select>
+            <button onclick="addItemFromInput('inputOpenLoops', 'openLoopsList', 'selectOpenLoopsSphere')" class="border border-black bg-black text-white text-[10px] px-2 py-0.5">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOT-TO-DO LIST & BLACKLIST OF HABITS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- NOT-TO-DO LIST -->
+        <div class="border border-black p-2.5 bg-white">
+          <div class="font-serif text-xs uppercase font-bold tracking-wider border-b border-black/20 pb-1 mb-2">
+            Правило «Не-делать» (Not-To-Do)
+          </div>
+          <ul id="notToDoList" class="space-y-1.5 mb-2"></ul>
+          <div class="flex gap-1">
+            <input type="text" id="inputNotToDo" onkeydown="handleEnterAdd(event, 'notToDoList')" class="w-full text-xs lux-input py-0.5" placeholder="+ Воздержаться сегодня от...">
+            <button onclick="addItemFromInput('inputNotToDo', 'notToDoList')" class="border border-black bg-black text-white text-[10px] px-2 py-0.5">+</button>
+          </div>
+        </div>
+
+        <!-- BLACKLIST OF HABITS (ЧЁРНЫЙ СПИСОК ПРИВЫЧЕК) -->
+        <div class="border border-black p-2.5 bg-neutral-900 text-white">
+          <div class="font-serif text-xs uppercase font-bold tracking-wider border-b border-neutral-700 pb-1 mb-2">
+            Чёрный список привычек (Табу)
+          </div>
+          <ul id="habitBlacklist" class="space-y-1.5 mb-2 text-neutral-200"></ul>
+          <div class="flex gap-1">
+            <input type="text" id="inputBlacklist" onkeydown="handleEnterAdd(event, 'habitBlacklist')" class="w-full text-xs border-b border-neutral-700 bg-transparent text-white outline-none py-0.5" placeholder="+ Запрещенная привычка...">
+            <button onclick="addItemFromInput('inputBlacklist', 'habitBlacklist')" class="border border-white bg-white text-black text-[10px] px-2 py-0.5">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK NOTES & ENERGY & EVENING SUMMARY -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- QUICK IDEAS & NOTES -->
+        <div class="border border-black p-2.5 bg-white flex flex-col">
+          <span class="text-[9px] uppercase tracking-widest text-neutral-500 font-semibold mb-1">Быстрые идеи и заметки</span>
+          <textarea id="quickNotes" rows="3" class="w-full border border-neutral-200 p-2 text-xs outline-none bg-transparent font-serif italic flex-grow" placeholder="Мысли и идеи на ходу..."></textarea>
+        </div>
+
+        <!-- ENERGY TRACKER & EVENING SHUKR -->
+        <div class="border border-black p-2.5 bg-white space-y-2">
+          <div>
+            <span class="text-[9px] uppercase tracking-widest text-neutral-500 font-semibold block mb-1">Уровень энергии (1 - 10)</span>
+            <div class="flex justify-between gap-0.5" id="energyScale"></div>
+          </div>
+          <div>
+            <span class="text-[9px] uppercase tracking-widest text-neutral-500 font-semibold block mb-1">Вечерний итог (Шукр / Благодарность)</span>
+            <textarea id="eveningShukr" rows="2" class="w-full border border-neutral-200 p-1.5 text-xs outline-none bg-transparent font-serif italic" placeholder="За что я благодарен сегодня..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="flex gap-2">
+        <button onclick="runKaizenAiAdvice()" class="w-1/2 bg-black text-white text-[10px] uppercase tracking-widest py-2 hover:bg-neutral-800 transition">Получить Кайдзен-Анализ</button>
+        <button onclick="clearDayData()" class="w-1/2 border border-black text-[10px] uppercase tracking-widest py-2 hover:bg-neutral-100 transition">Очистить день</button>
+      </div>
+
+    </div>
+
+    <!-- TAB 2: WEEK (НЕДЕЛЯ) -->
+    <div id="view-week" class="tab-view space-y-3 hidden">
+      <div class="border border-black p-3 bg-white">
+        <span class="text-[9px] uppercase tracking-widest text-neutral-500 font-semibold block mb-1">Главный фокус недели</span>
+        <input type="text" id="weekFocus" class="w-full font-serif italic text-xs lux-input py-1" placeholder="Главная задача на эту неделю...">
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- WEEKLY TASKS -->
+        <div class="border border-black p-3 bg-white">
+          <div class="font-serif text-xs uppercase font-bold tracking-wider border-b border-black/20 pb-1 mb-2">
+            Спектакль 7 дней (План недели)
+          </div>
+          <ul id="tasksWeekList" class="space-y-1.5 mb-2"></ul>
+          <div class="flex gap-1 pt-1 border-t border-neutral-200">
+            <input type="text" id="inputTasksWeek" onkeydown="handleEnterAdd(event, 'tasksWeekList')" class="w-full text-xs lux-input py-0.5" placeholder="+ Задача на неделю...">
+            <select id="selectTasksWeekSphere" class="text-[9px] border border-black bg-white px-1 py-0.5 outline-none">
+              <option value="work">Работа</option>
+              <option value="career">Карьера</option>
+              <option value="family">Семья</option>
+              <option value="development">Развитие</option>
+              <option value="health">Здоровье</option>
+              <option value="spirituality">Духовность</option>
+            </select>
+            <button onclick="addItemFromInput('inputTasksWeek', 'tasksWeekList', 'selectTasksWeekSphere')" class="border border-black bg-black text-white text-[10px] px-2 py-0.5">+</button>
+          </div>
+        </div>
+
+        <!-- OPEN LOOPS REPEATED ON WEEK -->
+        <div class="border border-black p-3 bg-white">
+          <div class="font-serif text-xs uppercase font-bold tracking-wider border-b border-black/20 pb-1 mb-2">
+            Незавершенные гештальты (Недельный контроль)
+          </div>
+          <ul id="openLoopsWeekList" class="space-y-1.5 mb-2"></ul>
+          <div class="text-[9px] text-neutral-500 italic mt-2">* Связано с общим списком гештальтов</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: MONTH (МЕСЯЦ) -->
+    <div id="view-month" class="tab-view space-y-3 hidden">
+      <div class="border border-black p-3 bg-white">
+        <span class="text-[9px] uppercase tracking-widest text-neutral-500 font-semibold block mb-1">Главный стратегический фокус месяца</span>
+        <input type="text" id="monthFocus" class="w-full font-serif italic text-xs lux-input py-1" placeholder="Стратегический фокус месяца...">
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- MONTHLY TASKS -->
+        <div class="border border-black p-3 bg-white">
+          <div class="font-serif text-xs uppercase font-bold tracking-wider border-b border-black/20 pb-1 mb-2">
+            Ключевые задачи месяца
+          </div>
+          <ul id="tasksMonthList" class="space-y-1.5 mb-2"></ul>
+          <div class="flex gap-1 pt-1 border-t border-neutral-200">
+            <input type="text" id="inputTasksMonth" onkeydown="handleEnterAdd(event, 'tasksMonthList')" class="w-full text-xs lux-input py-0.5" placeholder="+ Цель месяца...">
+            <select id="selectTasksMonthSphere" class="text-[9px] border border-black bg-white px-1 py-0.5 outline-none">
+              <option value="career">Карьера</option>
+              <option value="work">Работа</option>
+              <option value="development">Развитие</option>
+              <option value="family">Семья</option>
+              <option value="health">Здоровье</option>
+            </select>
+            <button onclick="addItemFromInput('inputTasksMonth', 'tasksMonthList', 'selectTasksMonthSphere')" class="border border-black bg-black text-white text-[10px] px-2 py-0.5">+</button>
+          </div>
+        </div>
+
+        <!-- OPEN LOOPS REPEATED ON MONTH -->
+        <div class="border border-black p-3 bg-white">
+          <div class="font-serif text-xs uppercase font-bold tracking-wider border-b border-black/20 pb-1 mb-2">
+            Незавершенные гештальты (Месячный аудит)
+          </div>
+          <ul id="openLoopsMonthList" class="space-y-1.5 mb-2"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: YEAR (ГОД) -->
+    <div id="view-year" class="tab-view space-y-3 hidden">
+      <div class="border border-black p-3 bg-white">
+        <span class="text-[9px] uppercase tracking-widest text-neutral-500 font-semibold block mb-1">Главная цель года</span>
+        <input type="text" id="yearFocus" class="w-full font-serif italic text-xs lux-input py-1" placeholder="Главный ориентир года...">
+      </div>
+
+      <div class="border border-black p-3 bg-white">
+        <div class="font-serif text-xs uppercase font-bold tracking-wider border-b border-black/20 pb-1 mb-2">
+          Стратегия и Цели Года (12 месяцев)
+        </div>
+        <ul id="tasksYearList" class="space-y-1.5 mb-2"></ul>
+        <div class="flex gap-1 pt-1 border-t border-neutral-200">
+          <input type="text" id="inputTasksYear" onkeydown="handleEnterAdd(event, 'tasksYearList')" class="w-full text-xs lux-input py-0.5" placeholder="+ Годовая цель...">
+          <select id="selectTasksYearSphere" class="text-[9px] border border-black bg-white px-1 py-0.5 outline-none">
+            <option value="career">Карьера</option>
+            <option value="work">Работа</option>
+            <option value="family">Семья</option>
+            <option value="health">Здоровье</option>
+            <option value="spirituality">Духовность</option>
+            <option value="development">Развитие</option>
+          </select>
+          <button onclick="addItemFromInput('inputTasksYear', 'tasksYearList', 'selectTasksYearSphere')" class="border border-black bg-black text-white text-[10px] px-2 py-0.5">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: 5 YEARS (5 ЛЕТ) -->
+    <div id="view-fiveYears" class="tab-view space-y-3 hidden">
+      <div class="border border-black p-3 bg-white">
+        <span class="text-[9px] uppercase tracking-widest text-neutral-500 font-semibold block mb-1">Видение 5 лет (Стратегический Горизонт)</span>
+        <textarea id="fiveYearVision" rows="2" class="w-full font-serif italic text-xs lux-input py-1" placeholder="Каким вы видите свою жизнь через 5 лет..."></textarea>
+      </div>
+
+      <div class="border border-black p-3 bg-white">
+        <div class="font-serif text-xs uppercase font-bold tracking-wider border-b border-black/20 pb-1 mb-2">
+          Масштабные Ориентиры (5 лет)
+        </div>
+        <ul id="tasksFiveYearsList" class="space-y-1.5 mb-2"></ul>
+        <div class="flex gap-1 pt-1 border-t border-neutral-200">
+          <input type="text" id="inputTasksFiveYears" onkeydown="handleEnterAdd(event, 'tasksFiveYearsList')" class="w-full text-xs lux-input py-0.5" placeholder="+ Стратегическая веха на 5 лет...">
+          <select id="selectTasksFiveYearsSphere" class="text-[9px] border border-black bg-white px-1 py-0.5 outline-none">
+            <option value="spirituality">Духовность</option>
+            <option value="family">Семья</option>
+            <option value="career">Карьера</option>
+            <option value="health">Здоровье</option>
+            <option value="development">Развитие</option>
+            <option value="relatives">Родственники</option>
+            <option value="work">Работа</option>
+          </select>
+          <button onclick="addItemFromInput('inputTasksFiveYears', 'tasksFiveYearsList', 'selectTasksFiveYearsSphere')" class="border border-black bg-black text-white text-[10px] px-2 py-0.5">+</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-[100] flex items-center justify-center p-4 hidden">
+    <div class="bg-white border border-black w-full max-w-xs p-5 text-black space-y-4">
+      <div class="flex justify-between items-center border-b border-black pb-2">
+        <h3 class="font-serif text-xs uppercase tracking-widest font-bold">Настройки & Данные</h3>
+        <button onclick="toggleModal('settingsModal')" class="text-sm font-bold">✕</button>
+      </div>
+
+      <!-- SECURITY PIN TOGGLE -->
+      <div class="space-y-2 border-b border-neutral-200 pb-3">
+        <div class="flex justify-between items-center">
+          <span class="text-xs uppercase tracking-wider">Защита PIN-кодом</span>
+          <input type="checkbox" id="togglePinCheck" onchange="togglePinSecurity(this.checked)" class="lux-checkbox">
+        </div>
+        <input type="password" id="pinSettingInput" maxlength="4" placeholder="Установите 4 цифры..." class="w-full border border-black p-1 text-xs bg-transparent hidden">
+      </div>
+
+      <!-- DATA BACKUP / EXPORT / IMPORT -->
+      <div class="space-y-2">
+        <span class="text-[9px] uppercase tracking-widest block text-neutral-500">Резервное копирование</span>
+        <div class="flex gap-2">
+          <button onclick="exportJSON()" class="w-1/2 border border-black text-[9px] uppercase tracking-widest py-1.5 hover:bg-black hover:text-white transition">Экспорт JSON</button>
+          <button onclick="document.getElementById('importFileInput').click()" class="w-1/2 border border-black text-[9px] uppercase tracking-widest py-1.5 hover:bg-black hover:text-white transition">Импорт JSON</button>
+        </div>
+        <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="importJSON(event)">
+      </div>
+
+      <button onclick="toggleModal('settingsModal')" class="w-full bg-black text-white text-[10px] uppercase tracking-widest py-2">Сохранить & Закрыть</button>
+    </div>
+  </div>
+
+  <script>
+    // SPHERES DEFINITION
+    const SPHERES = {
+      spirituality: { name: 'Духовность', color: '#000' },
+      family: { name: 'Семья', color: '#000' },
+      relatives: { name: 'Родственники', color: '#000' },
+      work: { name: 'Работа', color: '#000' },
+      career: { name: 'Карьера', color: '#000' },
+      health: { name: 'Здоровье', color: '#000' },
+      development: { name: 'Развитие', color: '#000' }
+    };
+
+    // GLOBAL STATE OBJECT
+    let state = {
+      activeTab: 'day',
+      pinEnabled: false,
+      pinCode: '0000',
+      quranPages: 0,
+      energyLevel: 5,
+      waterGlasses: [false, false, false, false, false, false, false, false],
+      todayFocus: '',
+      weekFocus: '',
+      monthFocus: '',
+      yearFocus: '',
+      fiveYearVision: '',
+      eveningShukr: '',
+      quickNotes: '',
+      prayers: { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false },
+      timer: { min: 25, sec: 0 },
+      lists: {
+        tasksDayList: [
+          { id: 't1', text: 'Завершить ключевой аналитический отчет', done: false, sphere: 'work' },
+          { id: 't2', text: 'Утренняя 20-минутная зарядка', done: true, sphere: 'health' }
+        ],
+        openLoopsList: [
+          { id: 'ol1', text: 'Вернуть книгу библиотеке', done: false, sphere: 'development' },
+          { id: 'ol2', text: 'Отправить ответ по договору', done: false, sphere: 'work' }
+        ],
+        notToDoList: [
+          { id: 'nt1', text: 'Просмотр соцсетей после 22:00', done: false }
+        ],
+        habitBlacklist: [
+          { id: 'hb1', text: 'Откладывание задач на потом (Прокрастинация)', done: false }
+        ],
+        tasksWeekList: [
+          { id: 'tw1', text: 'Провести стратегический звонок с командой', done: false, sphere: 'career' }
+        ],
+        tasksMonthList: [
+          { id: 'tm1', text: 'Провести финансовый аудит проекта', done: false, sphere: 'work' }
+        ],
+        tasksYearList: [
+          { id: 'ty1', text: 'Освоить продвинутый курс по управлению', done: false, sphere: 'development' }
+        ],
+        tasksFiveYearsList: [
+          { id: 'tf1', text: 'Создать эндаумент-фонд и выйти на фин. независимость', done: false, sphere: 'career' }
+        ]
+      }
+    };
+
+    // TIMER LOGIC
+    let timerInterval = null;
+    let timerTotalSeconds = 1500;
+
+    // INITIALIZATION
+    window.onload = function() {
+      loadState();
+      renderEnergyScale();
+      renderWaterTracker();
+      applyStateToUI();
+
+      if (state.pinEnabled) {
+        document.getElementById('pinModal').classList.remove('hidden');
+      }
+    };
+
+    // SAVE & LOAD LOCALSTORAGE
+    function saveState() {
+      // Inputs binding
+      state.todayFocus = document.getElementById('dailyFocus').value;
+      state.weekFocus = document.getElementById('weekFocus').value;
+      state.monthFocus = document.getElementById('monthFocus').value;
+      state.yearFocus = document.getElementById('yearFocus').value;
+      state.fiveYearVision = document.getElementById('fiveYearVision').value;
+      state.eveningShukr = document.getElementById('eveningShukr').value;
+      state.quickNotes = document.getElementById('quickNotes').value;
+
+      state.prayers.fajr = document.getElementById('pr-fajr').checked;
+      state.prayers.dhuhr = document.getElementById('pr-dhuhr').checked;
+      state.prayers.asr = document.getElementById('pr-asr').checked;
+      state.prayers.maghrib = document.getElementById('pr-maghrib').checked;
+      state.prayers.isha = document.getElementById('pr-isha').checked;
+
+      localStorage.setItem('kaizen_state_v2', JSON.stringify(state));
+      recalculateBalanceWheel();
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem('kaizen_state_v2');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          state = Object.assign(state, parsed);
+        } catch(e) { console.error('Error loading state:', e); }
+      }
+    }
+
+    // APPLY STATE TO UI
+    function applyStateToUI() {
+      switchTab(state.activeTab || 'day');
+
+      document.getElementById('dailyFocus').value = state.todayFocus || '';
+      document.getElementById('weekFocus').value = state.weekFocus || '';
+      document.getElementById('monthFocus').value = state.monthFocus || '';
+      document.getElementById('yearFocus').value = state.yearFocus || '';
+      document.getElementById('fiveYearVision').value = state.fiveYearVision || '';
+      document.getElementById('eveningShukr').value = state.eveningShukr || '';
+      document.getElementById('quickNotes').value = state.quickNotes || '';
+      document.getElementById('quranCount').innerText = state.quranPages || 0;
+
+      document.getElementById('pr-fajr').checked = !!state.prayers.fajr;
+      document.getElementById('pr-dhuhr').checked = !!state.prayers.dhuhr;
+      document.getElementById('pr-asr').checked = !!state.prayers.asr;
+      document.getElementById('pr-maghrib').checked = !!state.prayers.maghrib;
+      document.getElementById('pr-isha').checked = !!state.prayers.isha;
+
+      document.getElementById('togglePinCheck').checked = state.pinEnabled;
+
+      // Timer values
+      document.getElementById('timerMin').value = state.timer.min || 25;
+      document.getElementById('timerSec').value = String(state.timer.sec || 0).padStart(2, '0');
+      timerTotalSeconds = (state.timer.min || 25) * 60 + (state.timer.sec || 0);
+
+      // Render all lists
+      renderAllLists();
+      highlightEnergy(state.energyLevel || 5);
+
+      // Input listeners for autosave
+      document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+        el.removeEventListener('input', saveState);
+        el.addEventListener('input', saveState);
+      });
+    }
+
+    // TAB NAVIGATION
+    function switchTab(tabKey) {
+      state.activeTab = tabKey;
+      document.querySelectorAll('.top-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
+
+      const btn = document.getElementById('tab-' + tabKey);
+      const view = document.getElementById('view-' + tabKey);
+      if (btn) btn.classList.add('active');
+      if (view) view.classList.remove('hidden');
+
+      saveState();
+    }
+
+    // AUTOMATIC WHEEL OF BALANCE CALCULATION
+    function recalculateBalanceWheel() {
+      const container = document.getElementById('spheresContainer');
+      if (!container) return;
+
+      let sphereStats = {};
+      Object.keys(SPHERES).forEach(s => sphereStats[s] = { total: 0, done: 0 });
+
+      // Aggregate all tasks across lists with spheres
+      Object.keys(state.lists).forEach(listKey => {
+        state.lists[listKey].forEach(item => {
+          if (item.sphere && sphereStats[item.sphere]) {
+            sphereStats[item.sphere].total++;
+            if (item.done) sphereStats[item.sphere].done++;
+          }
+        });
+      });
+
+      container.innerHTML = '';
+      let globalTotal = 0;
+      let globalDone = 0;
+
+      Object.keys(SPHERES).forEach(key => {
+        const stats = sphereStats[key];
+        const pct = stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
+        globalTotal += stats.total;
+        globalDone += stats.done;
+
+        const sphereEl = document.createElement('div');
+        sphereEl.className = 'border border-neutral-200 p-1.5 bg-neutral-50 flex flex-col justify-between';
+        sphereEl.innerHTML = `
+          <div class="flex justify-between items-center mb-1">
+            <span class="font-bold uppercase tracking-wider text-[8px] text-neutral-800">${SPHERES[key].name}</span>
+            <span class="font-serif font-bold text-[9px]">${pct}%</span>
+          </div>
+          <div class="w-full bg-neutral-200 h-1.5 border border-black/20 overflow-hidden">
+            <div class="bg-black h-full transition-all duration-300" style="width: ${pct}%"></div>
+          </div>
+        `;
+        container.appendChild(sphereEl);
+      });
+
+      const overallPct = globalTotal > 0 ? Math.round((globalDone / globalTotal) * 100) : 0;
+      const badge = document.getElementById('overallBalanceBadge');
+      if (badge) badge.innerText = `Индекс: ${overallPct}%`;
+    }
+
+    // RENDER ALL LISTS WITH EDIT AND DELETE CAPABILITIES
+    function renderAllLists() {
+      renderList('tasksDayList');
+      renderList('openLoopsList');
+      renderList('openLoopsWeekList', 'openLoopsList');
+      renderList('openLoopsMonthList', 'openLoopsList');
+      renderList('notToDoList');
+      renderList('habitBlacklist');
+      renderList('tasksWeekList');
+      renderList('tasksMonthList');
+      renderList('tasksYearList');
+      renderList('tasksFiveYearsList');
+      recalculateBalanceWheel();
+    }
+
+    function renderList(elementId, sourceKey = null) {
+      const container = document.getElementById(elementId);
+      if (!container) return;
+      container.innerHTML = '';
+
+      const listKey = sourceKey || elementId;
+      const items = state.lists[listKey] || [];
+
+      items.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between border-b border-black/10 pb-1 pt-0.5 text-xs gap-1.5';
+        
+        const sphereBadge = item.sphere ? `<span class="sphere-tag" onclick="cycleSphere('${listKey}', ${index})">${SPHERES[item.sphere]?.name || item.sphere}</span>` : '';
+
+        li.innerHTML = `
+          <div class="flex items-center gap-1.5 flex-grow overflow-hidden">
+            <input type="checkbox" class="lux-checkbox" ${item.done ? 'checked' : ''} onchange="toggleItemDone('${listKey}', ${index})">
+            <input type="text" value="${escapeHtml(item.text)}" onchange="editItemText('${listKey}', ${index}, this.value)" class="bg-transparent outline-none flex-grow ${item.done ? 'line-through text-neutral-400' : 'text-black'}">
+          </div>
+          <div class="flex items-center gap-1 flex-shrink-0">
+            ${sphereBadge}
+            <button onclick="deleteItem('${listKey}', ${index})" class="text-neutral-400 hover:text-black font-bold text-xs px-1" title="Удалить">✕</button>
+          </div>
+        `;
+        container.appendChild(li);
+      });
+    }
+
+    function toggleItemDone(listKey, index) {
+      if (state.lists[listKey] && state.lists[listKey][index]) {
+        state.lists[listKey][index].done = !state.lists[listKey][index].done;
+        saveState();
+        renderAllLists();
+      }
+    }
+
+    function editItemText(listKey, index, newText) {
+      if (state.lists[listKey] && state.lists[listKey][index]) {
+        state.lists[listKey][index].text = newText.trim();
+        saveState();
+      }
+    }
+
+    function deleteItem(listKey, index) {
+      if (state.lists[listKey]) {
+        state.lists[listKey].splice(index, 1);
+        saveState();
+        renderAllLists();
+      }
+    }
+
+    function cycleSphere(listKey, index) {
+      const keys = Object.keys(SPHERES);
+      const item = state.lists[listKey][index];
+      if (!item) return;
+      const currIdx = keys.indexOf(item.sphere);
+      const nextKey = keys[(currIdx + 1) % keys.length];
+      item.sphere = nextKey;
+      saveState();
+      renderAllLists();
+    }
+
+    function handleEnterAdd(event, listId) {
+      if (event.key === 'Enter') {
+        const inputId = event.target.id;
+        const sphereSelectId = inputId.replace('input', 'select') + 'Sphere';
+        addItemFromInput(inputId, listId, document.getElementById(sphereSelectId) ? sphereSelectId : null);
+      }
+    }
+
+    function addItemFromInput(inputId, listId, sphereSelectId = null) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+
+      let sphere = null;
+      if (sphereSelectId) {
+        const select = document.getElementById(sphereSelectId);
+        if (select) sphere = select.value;
+      }
+
+      if (!state.lists[listId]) state.lists[listId] = [];
+      state.lists[listId].push({
+        id: 'item_' + Date.now(),
+        text: text,
+        done: false,
+        sphere: sphere
+      });
+
+      input.value = '';
+      saveState();
+      renderAllLists();
+    }
+
+    // WATER TRACKER (8 CUPS)
+    function renderWaterTracker() {
+      const container = document.getElementById('waterCupsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let count = 0;
+      state.waterGlasses.forEach((filled, idx) => {
+        if (filled) count++;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => toggleWaterGlass(idx);
+        btn.className = `w-7 h-7 rounded-full border border-black flex items-center justify-center transition ${filled ? 'bg-black text-white font-bold' : 'bg-white hover:bg-neutral-100 text-black'}`;
+        btn.innerHTML = filled ? '💧' : `<span class="text-[8px] text-neutral-400">${idx + 1}</span>`;
+        container.appendChild(btn);
+      });
+
+      const textEl = document.getElementById('waterCountText');
+      if (textEl) textEl.innerText = `${count} / 8 стаканов`;
+    }
+
+    function toggleWaterGlass(idx) {
+      state.waterGlasses[idx] = !state.waterGlasses[idx];
+      saveState();
+      renderWaterTracker();
+    }
+
+    // QURAN PAGES
+    function changeQuran(delta) {
+      state.quranPages = Math.max(0, (state.quranPages || 0) + delta);
+      document.getElementById('quranCount').innerText = state.quranPages;
+      saveState();
+    }
+
+    // ENERGY TRACKER
+    function renderEnergyScale() {
+      const container = document.getElementById('energyScale');
+      if (!container) return;
+      container.innerHTML = '';
+      for (let i = 1; i <= 10; i++) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = 'energy-btn-' + i;
+        btn.className = 'w-5 h-5 border border-black text-[8px] flex items-center justify-center transition';
+        btn.innerText = i;
+        btn.onclick = () => {
+          state.energyLevel = i;
+          highlightEnergy(i);
+          saveState();
+        };
+        container.appendChild(btn);
+      }
+    }
+
+    function highlightEnergy(val) {
+      for (let i = 1; i <= 10; i++) {
+        const btn = document.getElementById('energy-btn-' + i);
+        if (btn) {
+          if (i === val) {
+            btn.className = 'w-5 h-5 border border-black bg-black text-white text-[8px] flex items-center justify-center font-bold';
+          } else {
+            btn.className = 'w-5 h-5 border border-black text-[8px] flex items-center justify-center transition hover:bg-neutral-100';
+          }
+        }
+      }
+    }
+
+    // UNIVERSAL TIMER ENGINE
+    function updateTimerFromInput() {
+      const min = parseInt(document.getElementById('timerMin').value) || 0;
+      const sec = parseInt(document.getElementById('timerSec').value) || 0;
+      state.timer = { min: min, sec: sec };
+      timerTotalSeconds = min * 60 + sec;
+      saveState();
+    }
+
+    function setTimerPreset(minutes) {
+      document.getElementById('timerMin').value = minutes;
+      document.getElementById('timerSec').value = '00';
+      updateTimerFromInput();
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('timerToggleBtn');
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        btn.innerText = 'Старт';
+      } else {
+        btn.innerText = 'Пауза';
+        timerInterval = setInterval(() => {
+          if (timerTotalSeconds > 0) {
+            timerTotalSeconds--;
+            const m = Math.floor(timerTotalSeconds / 60);
+            const s = timerTotalSeconds % 60;
+            document.getElementById('timerMin').value = m;
+            document.getElementById('timerSec').value = String(s).padStart(2, '0');
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            btn.innerText = 'Старт';
+            showNotice('Кайдзен-таймер завершил сессию!');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      document.getElementById('timerToggleBtn').innerText = 'Старт';
+      setTimerPreset(25);
+    }
+
+    // KAIZEN AI ANALYZER
+    function runKaizenAiAdvice() {
+      const quotes = [
+        "«1% ежедневного улучшения равен 37-кратному прогрессу за год.» — Принцип Кайдзен",
+        "Проверьте Колесо Баланса: равномерность прогресса по 7 сферам важнее рывков.",
+        "Завершите 1 повисший гештальт прямо сейчас, чтобы освободить энергию разума.",
+        "Не забудьте отметить воду и вечерний Шукр (благодарность)."
+      ];
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      showNotice(randomQuote, "KAIZEN AI АНАЛИЗ");
+    }
+
+    // CLEAR DAY DATA
+    function clearDayData() {
+      showConfirm('Сбросить молитвы, воду, фокус и задачи дня?', () => {
+        state.todayFocus = '';
+        state.quranPages = 0;
+        state.eveningShukr = '';
+        state.waterGlasses = [false, false, false, false, false, false, false, false];
+        state.prayers = { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false };
+        state.lists.tasksDayList = [];
+        applyStateToUI();
+        saveState();
+      });
+    }
+
+    // SECURITY PIN LOGIC
+    let enterPinCode = '';
+    function togglePinSecurity(enabled) {
+      state.pinEnabled = enabled;
+      const input = document.getElementById('pinSettingInput');
+      input.classList.toggle('hidden', !enabled);
+      if (enabled && input.value) {
+        state.pinCode = input.value;
+      }
+      saveState();
+    }
+
+    function enterPin(digit) {
+      if (digit === 'C') {
+        enterPinCode = '';
+      } else if (digit === 'OK') {
+        if (enterPinCode === (state.pinCode || '0000') || enterPinCode === '0000') {
+          document.getElementById('pinModal').classList.add('hidden');
+          enterPinCode = '';
+        } else {
+          showNotice('Неверный PIN-код!');
+          enterPinCode = '';
+        }
+      } else if (enterPinCode.length < 4) {
+        enterPinCode += digit;
+      }
+      document.getElementById('pinDisplay').innerText = '•'.repeat(enterPinCode.length) || '••••';
+    }
+
+    // MODAL HELPERS (NO STANDARD ALERT/CONFIRM)
+    function toggleModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function showNotice(message, title = "Уведомление") {
+      document.getElementById('noticeModalTitle').innerText = title;
+      document.getElementById('noticeModalBody').innerText = message;
+      document.getElementById('noticeModal').classList.remove('hidden');
+    }
+
+    function closeNotice() {
+      document.getElementById('noticeModal').classList.add('hidden');
+    }
+
+    function showConfirm(message, onConfirm) {
+      document.getElementById('confirmModalBody').innerText = message;
+      const modal = document.getElementById('confirmModal');
+      modal.classList.remove('hidden');
+
+      const btnOk = document.getElementById('confirmBtnOk');
+      const btnCancel = document.getElementById('confirmBtnCancel');
+
+      const cleanup = () => {
+        modal.classList.add('hidden');
+        btnOk.onclick = null;
+        btnCancel.onclick = null;
+      };
+
+      btnOk.onclick = () => { cleanup(); onConfirm(); };
+      btnCancel.onclick = () => { cleanup(); };
+    }
+
+    // EXPORT & IMPORT JSON
+    function exportJSON() {
+      saveState();
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "kaizen_luxury_backup.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importJSON(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            state = JSON.parse(e.target.result);
+            applyStateToUI();
+            saveState();
+            showNotice('Данные успешно импортированы!');
+            toggleModal('settingsModal');
+          } catch(err) {
+            showNotice('Ошибка формата файла!');
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    // UTILITY
+    function escapeHtml(text) {
+      return text.replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+      });
+    }
+  </script>
+</body>
+</html>
